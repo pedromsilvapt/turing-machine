@@ -6,7 +6,7 @@ export enum TapeMovement {
     Right = 2
 }
 
-export type TapeValue = string | Symbol;
+export type TapeValue = string | boolean | Symbol;
 
 export class Tape {
     static fromString ( input : string, cursor : number = -1 ) : Tape {
@@ -14,6 +14,14 @@ export class Tape {
             .map( a => a === '▲' ? null : a );
         
         return new Tape( memory, cursor + 1 );
+    }
+
+    static toString ( tape : Tape ) : string {
+        if ( !tape ) {
+            return null;
+        }
+
+        return tape.trim().toString();
     }
 
     memory : TapeValue[];
@@ -58,6 +66,18 @@ export class Tape {
 
     store ( value : TapeValue ) {
         this.memory[ this.cursor ] = value;
+    }
+
+    trim () : this {
+        let trimmed : number = this.memory.length;
+
+        while ( trimmed > 0 && trimmed > this.cursor && this.memory[ trimmed - 1 ] === null ) {
+            trimmed--;
+        }
+
+        this.memory = this.memory.slice( 0, trimmed );
+        
+        return this;
     }
 
     clone () : Tape {

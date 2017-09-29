@@ -1,5 +1,6 @@
 import { State } from "./State";
 import { Tape } from "./Tape";
+import * as chalk from 'chalk';
 
 export { Tape, TapeMovement } from './Tape';
 
@@ -68,7 +69,7 @@ export class TuringMachine {
 
         while ( currentState != this.finalState ) {
             if ( this.debug ) {
-                history.push( [ currentState, currentTape.clone() ] );
+                history.push( [ currentState, currentTape.clone().trim() ] );
             }
 
             if ( !this.states.has( currentState ) ) {
@@ -84,10 +85,30 @@ export class TuringMachine {
             }
         }
 
+        if ( currentState ) {
+            history.push( [ currentState, currentTape.clone().trim() ] );
+        }
+
         if ( this.debug ) {
-            console.log( history.map( ( [ state, tape ] ) => `(${ state }, ${ tape.toString() })` ).join( ' ' ) );
+            console.log( history.map( ( [ state, tape ] ) => `(${ state == this.finalState ? chalk.green( state ) : state }, ${ tape.toString() })` ).join( ' ' ) );
         }
 
         return currentTape;
+    }
+
+    diagnose ( tape : string, cursor ?: number );
+    diagnose ( tape : Tape );
+    diagnose ( tape : string | Tape, cursor : number = -1 ) {
+        if ( typeof tape === 'string' ) {
+            tape = Tape.fromString( tape, cursor );
+        }
+
+        const wasDebugging = this.debug;
+
+        this.debug = true;
+
+        console.log( 'From', Tape.toString( tape ), 'to', Tape.toString( this.run( tape ) ) );
+        
+        this.debug = wasDebugging;
     }
 }

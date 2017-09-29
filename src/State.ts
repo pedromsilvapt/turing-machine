@@ -16,7 +16,7 @@ export class State {
         this.machine = machine;
     }
 
-    addTransition ( target : string | State, [ input, output, movement ] : BaseTransitionDefinition ) : this {
+    addTransition ( target : string | State, [ input, output, movement ] : BaseTransitionDefinition = [ true, true, TapeMovement.Center ] ) : this {
         if ( target instanceof State ) {
             target = target.name;
         }

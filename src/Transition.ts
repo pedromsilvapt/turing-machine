@@ -21,11 +21,15 @@ export class BaseTransition implements Transition {
     }
 
     run ( tape : Tape ) : [ string, Tape ] {
-        if ( tape.read() !== this.input ) {
-            return [ null, null ];
+        if ( this.input !== true ) {
+            if ( tape.read() !== this.input ) {
+                return [ null, null ];
+            }
         }
 
-        tape.store( this.output );
+        if ( this.output !== true ) {
+            tape.store( this.output );
+        }
 
         tape.move( this.movement );
 

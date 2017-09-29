@@ -1,20 +1,25 @@
 {
-  "name": "turing",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "turing-machine",
+  "version": "0.5.0",
+  "description": "A simplistic simulation of turing machines written in TypeScript",
+  "main": ".lib/TuringMachine.js",
+  "types": "./lib/TuringMachine.d.ts",
+  "keywords": [
+    "graphs", "turing", "turing machine", "automata"
+  ],
   "directories": {
     "lib": "lib"
   },
   "dependencies": {
-    "@types/node": "^8.0.31",
     "chalk": "^2.1.0",
     "itt": "^0.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/node": "^8.0.31"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Pedro M. Silva <pemiolsi@hotmail.com>",
   "license": "ISC"
 }
