@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "outDir": "lib/",
+        "lib": [
+            "es7", "esnext"
+        ]
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
