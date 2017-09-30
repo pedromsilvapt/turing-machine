@@ -55,4 +55,9 @@ machine.setFinalState( stateFinal );
 machine.diagnose( 'bbaabab' );
 // Otherwise, just call the method run and get the final Tape state
 machine.run( 'bbaabab' );
+
+// Additionaly, it's also possible to generate the Dot representation of our graph
+machine.toDot();
+// Or save it directly to a file
+machine.toDotFile( 'graph.dot' );
 ```

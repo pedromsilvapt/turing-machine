@@ -1,6 +1,8 @@
 import { State } from "./State";
-import { Tape } from "./Tape";
+import { Tape, TapeMovement } from "./Tape";
 import * as chalk from 'chalk';
+import * as itt from 'itt';
+import * as fs from 'mz/fs';
 
 export { Tape, TapeMovement } from './Tape';
 
@@ -49,20 +51,24 @@ export class TuringMachine {
         return this;
     }
 
-    run ( tape : Tape ) : Tape;
-    run ( initialState : string | State, tape : Tape ) : Tape;
-    run ( initialState : string | State | Tape, tape ?: Tape ) : Tape {
+    run ( tape : string | Tape ) : Tape;
+    run ( initialState : string | State, tape : string | Tape ) : Tape;
+    run ( initialState : string | State | Tape, tape ?: string | Tape ) : Tape {
         if ( initialState instanceof State ) {
             initialState = initialState.name;
         }
 
-        if ( initialState instanceof Tape ) {
+        if ( initialState instanceof Tape || !tape && typeof initialState === 'string' ) {
             tape = initialState;
 
             initialState = this.initialState;
         }
+
+        if ( typeof tape === 'string' ) {
+            tape = Tape.fromString( tape );
+        }
         
-        let currentState : string = initialState;
+        let currentState : string = initialState as string;
         let currentTape : Tape = tape;
 
         const history : [ string, Tape ][] = [];
@@ -110,5 +116,45 @@ export class TuringMachine {
         console.log( 'From', Tape.toString( tape ), 'to', Tape.toString( this.run( tape ) ) );
         
         this.debug = wasDebugging;
+    }
+
+    toDot () {
+        const lines : string[] = [];
+
+        lines.push( `digraph ${ this.constructor.name } {` );
+
+        for ( let state of this.states.values() ) {
+            if ( state.machine ) {
+                lines.push( `\t${ state.name } [label=${state.machine.constructor.name} shape=plaintext]` )
+            }
+
+            for ( let [ target, transitions ] of itt( state.transitions ).groupBy( t => t.target ) ) {
+                const transitionsString = transitions.map( transition => {
+                    const input = transition.input === null
+                        ? '▲'
+                        : ( transition.input === true ? '*' : transition.input );
+
+                    const output = transition.output === null
+                        ? '▲'
+                        : ( transition.output === true ? '*' : transition.output );
+
+                    const movement = transition.movement === TapeMovement.Left
+                        ? 'L'
+                        : ( transition.movement === TapeMovement.Right ? 'R' : 'C' );
+
+                    return `${ input }/${ output },${ movement }`;
+                } );
+
+                lines.push ( `\t${ state.name } -> ${ target } [label="${ transitionsString.join( '\n' ) }"]` );
+            }
+        }
+
+        lines.push( '}' );
+
+        return lines.join( '\n' );
+    }
+
+    async toDotFile ( file : string ) : Promise<void> {
+        await fs.writeFile( file, this.toDot(), { encoding: 'utf8' } );
     }
 }
